@@ -1,0 +1,18 @@
+@import 'utilities/breakpoints';
+@import 'utilities/functions';
+@import 'utilities/variables';
+
+body{
+    @include media-breakpoint-up(sm) {
+        background-color: red;
+     }
+@include media-breakpoint-up(md) {
+    background-color: royalblue;
+ }
+@include media-breakpoint-up(lg) {
+    background-color: seagreen;
+ }
+@include media-breakpoint-up(xl) {
+    background-color: yellow;
+ }
+}

@@ -1,0 +1,12 @@
+@mixin media_for_mobile($size) {
+  @media (min-width: $size) {
+    @content;
+  }  
+}
+  
+@mixin media_for_desktop($size) {
+  @media (min-width: $size) {
+    @content;
+  }  
+}
+  

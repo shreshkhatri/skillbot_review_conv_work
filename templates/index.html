@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block header %}
+  
+{% endblock %}
+
+{% block body %}
+<div class="container main-container">
+  <div class="row zeroth-row">
+    <div class="col-md-4 col-sm-6 border border-primary  bg-info" style="text-align: center; padding-top: .5em; "><h6>Conversations List</h6></div>
+    <div class="col-md-4 col-sm-6 border border-secondary  bg-info" style="text-align: center; padding-top: .5em;"><h6>Conversation</h6></div>
+    <div class="col-md-4 col-sm-6 border border-secondary  bg-info" style="text-align: center; padding-top: .5em;"><h6>Review Section</h6></div>
+  </div>
+  <div class='row first-row'>
+    <div class="col-md-4 col-sm-6 col-conversation-list border border-info rounded" style="margin:0;padding: 0;">
+      <div class="conv-list-loader" style="display: none;"></div>
+      {% if (no_conversation_list!=True) %}
+      <div id="conversation_list" class="list-group ">
+        {% for item in conv %}
+          <!--selecting only items having user messages -->
+          {% if (item.n_user_messages!=0 )%}
+            {% include 'conversation_item.html' %}
+          {% endif %}
+        {% endfor %}        
+      </div>
+      {% else %}
+        {% include 'no_conversation_list.html' %}
+      {% endif %}
+    </div>
+
+    <div class="col-md-4 col-sm-6 col-conversation border border-info rounded" style="margin: 0; padding: 0;">
+      {% if (no_conversation_list!=True) %}
+      {% include 'conversation_layout.html' %}
+      {% else %}
+      {% include 'no_single_conv.html' %}
+      {% endif %}
+    </div>
+    <div class="col-md-4 col-sm-6 review-section border border-info rounded">
+      {% include 'review_section.html' %}
+    </div>
+  </div>
+  <div class="row second-row">
+    <div class="col-md-4 col-sm-6">
+      <button id="conversation-list-reloader" class="btn btn-sm btn-primary">Refresh List</button>
+    </div>
+    <div class="col-md-7 col-sm-6">
+      <div id="only1" >
+        <div class="tooltip bs-tooltip-top" role="tooltip">
+          <div class="arrow"></div>
+          <div class="tooltip-inner">
+            Some tooltip text!
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block footer%}
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base_copy.html' %}
+{% block header %}
+  
+{% endblock %}
+
+{% block body %}
+<div class="container main-container">
+  <div class='row first-row'>
+    <div class="col-md-4 col-sm-6 col-conversation-list border border-info rounded" style="margin:0;padding: 0;">
+        </div>
+    <div class="col-md-4 col-sm-6 col-conversation border border-info rounded" >
+        <div class="row" style="height: 2em; color: black; text-align: center;"><h6>Conversation</h6></div>
+        <div class="row">
+            {% include 'conversation_layout.html' %}
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-6 col-conversation border border-info rounded">
+        
+      </div>
+  </div>
+  <div class="row second-row">
+    <div class="col-md-4 col-sm-6">
+      <button class="btn btn-primary">Reload Conversations</button>
+    </div>
+    <div class="col-md-7 col-sm-6"></div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block footer%}
+
+{% endblock %}
