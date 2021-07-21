@@ -14,14 +14,17 @@ def get_list_of_entities(token):
 
 #upload training data
 def upload_training_data(token,training_data):
-    data=requests.post(
+    response=requests.post(
         ' http://localhost:5002/api/projects/default/training_examples',headers={
             'Accept':'application/json',
             'Authorization':'Bearer '+token
             },
             json=training_data
             )
-    return data.json()
+    if response.status_code==200:
+        return True
+    else:
+        return False
 
 
 #get list of existing conversations
@@ -33,7 +36,8 @@ def get_list_of_conversation(token):
             'Authorization':'Bearer '+token
             }
             )
-    return data.json()
+    return get_conversations_summary(token,data.json())
+    
 
 #get a single conversation
 def get_a_conversation(token, conv_id):
@@ -45,7 +49,6 @@ def get_a_conversation(token, conv_id):
             'Authorization':'Bearer '+token
             }
             )
-    print(url)
     return conversation.json()
 
 #get a list of intents data
@@ -58,3 +61,40 @@ def get_intent_list(token):
             }
             )
     return data.json()
+
+
+#check existing of fallback intents in conversation and get the count of it
+def get_conversations_summary(token,conversation_list):
+    
+    count_fallback_intent=0
+
+    for an_item in conversation_list:
+        if 'sender_id' in an_item:
+            conversation=get_a_conversation(token, an_item['sender_id'])
+            for an_event in conversation['events']:
+                if an_event['event']=='user':
+                    intent_name=an_event['parse_data']['intent']['name']
+                    if (intent_name=='nlu_fallback'):
+                        count_fallback_intent+=1
+        an_item['count_fallback_intent']=count_fallback_intent
+        count_fallback_intent=0
+    
+    return conversation_list
+
+
+#correcting the intent only
+def correct_intent(token,incoming_JSON):
+    print('url :'+'http://localhost:5002/api/conversations/'+incoming_JSON['sender_id']+'/messages/'+incoming_JSON['message_timestamp']+'/intent')
+    print(type(json.dumps({'intent':incoming_JSON['intent'],'mapped_to':incoming_JSON['mapped_to']})))
+    response=requests.put(
+        'http://localhost:5002/api/conversations/'+incoming_JSON['sender_id']+'/messages/'+incoming_JSON['message_timestamp']+'/intent',
+        headers={
+            'Accept':'application/json',
+            'Authorization':'Bearer '+token
+            },json={'intent':incoming_JSON['intent'],'mapped_to':incoming_JSON['mapped_to']}
+            )
+    if response.status_code==200:
+        return True
+    else:
+        return False
+        

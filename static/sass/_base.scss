@@ -1,18 +1,21 @@
-@import 'utilities/breakpoints';
-@import 'utilities/functions';
-@import 'utilities/variables';
+html {
+  font-size: 16px;
+}
+body {
+  @include media_for_xs($screen-extra-small) {
+    font-size: $font_size_xs;
+    
+   
+  }
 
-body{
-    @include media-breakpoint-up(sm) {
-        background-color: red;
-     }
-@include media-breakpoint-up(md) {
-    background-color: royalblue;
- }
-@include media-breakpoint-up(lg) {
-    background-color: seagreen;
- }
-@include media-breakpoint-up(xl) {
-    background-color: yellow;
- }
+  @include media_for_sm($screen-small) {
+    font-size: $font_size_sm;
+    
+    
+  }
+
+  @include media_for_md($screen-medium) {
+    font-size: $font_size_md;
+    
+  }
 }

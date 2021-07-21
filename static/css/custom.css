@@ -75,6 +75,10 @@ margin-left: 4em;
   font-size: .9em;
 }
 
+.conv-detail p{
+  margin: 0; padding: 0;
+}
+
 #review-details-error{
   font-size: 2em; 
   text-align: center; 
@@ -153,6 +157,7 @@ margin-left: 4em;
     border-radius: 1em;
     box-shadow: 1px 2px;
     max-width: 45%;
+    word-wrap: break-word;
 }
 
 .message_bubble_bot{
@@ -175,6 +180,10 @@ margin-left: 4em;
   margin-top: .25em;
   font-size: .8em;
   color: cadetblue;
+}
+
+.message_details p{
+  margin:0;padding: 0;
 }
 
 .message_bubble_user:hover{

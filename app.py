@@ -7,10 +7,10 @@ import json
 
 app=Flask(__name__)
 app.debug=True
-Scss(app,static_dir='static/css',asset_dir='static/sass')
+#Scss(app,static_dir='static/css',asset_dir='static/sass')
 fa = FontAwesome(app)
 
-bearer_token=auth.performauthentication('me','9AiTdPBkxq6D')
+bearer_token=auth.performauthentication('me','qlopO8wPZS7O')
 
 @app.route('/getEntityList')
 def get_entity_list():
@@ -18,12 +18,23 @@ def get_entity_list():
     response=json.dumps(response)
     return json.dumps(response)
 
+@app.route('/update_intent',methods=['POST'])
+def update_intent():
+    incoming_JSON=request.get_json()
+    response=api_calls.correct_intent(bearer_token,incoming_JSON)
+    if (response):
+        return json.dumps({'response':True})
+    else:
+        return json.dumps({'response':False})
+
 @app.route('/uploadNewTrainingdata',methods=['POST'])
 def upload_new_trainingdata():
     incoming_JSON=request.get_json()
     response=api_calls.upload_training_data(bearer_token,incoming_JSON)
-    conversation=json.dumps(response)
-    return json.dumps(response)
+    if response:
+        return json.dumps({'status':True})
+    else:
+        return json.dumps({'status':False})
 
 
 @app.route('/getIntentList')

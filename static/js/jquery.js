@@ -1,9 +1,11 @@
 
 $(function(){
 
+  var a_training_example={};
   var is_message_saved=true;
   var intent_name_availability=undefined;
-
+  
+  var predicted_intent;
   var corrected_intent=undefined; //variable for intent choosen by selectpicker
   var new_intent=undefined; //variable for holding newly selected intent
 
@@ -15,6 +17,8 @@ $(function(){
 
   var allow_save_review=false;
 
+  var incorrect_intent,confidence;
+
   //object for holding message
   var message_object={
     latest_message:'',
@@ -23,9 +27,17 @@ $(function(){
     }
   };
 
+  function reset_before_rendering_review_section(){
+    new_intent=undefined;
+    corrected_intent=undefined;
+    predicted_intent=undefined;
+    selected_entity_list=[];
+  }
+
+
   //function for detecting change falue of select picker
   $(document).on('change','select',function(){
-    var predicted_intent=$('#predicted-intent').val();
+    predicted_intent=$('#predicted-intent').val();
     if($('.selectpicker').selectpicker('val')==predicted_intent){
       corrected_intent=undefined;
     }
@@ -356,8 +368,18 @@ $(function(){
           custom_data_payload+='data-message="'+element.text+'" ';
           custom_data_payload+='data-intent-name="'+element.parse_data.intent.name+'" ';
 
-          message_bubble_div='<div class="message_bubble_user" '+custom_data_payload+' >'+element.text+'</div>';
-          extra_div='<div class="message_details" style="float:right;">Intent : '+element.parse_data.intent.name+'</div>';
+          if (element.parse_data.intent.name=='nlu_fallback'){
+            incorrect_intent=element.parse_data.intent_ranking[1].name;
+            confidence=element.parse_data.intent_ranking[1].confidence;
+            confidence=parseFloat(confidence).toFixed(2);
+            extra_div='<div class="message_details " style="float:right;"><p>Intent : '+incorrect_intent+'</p><p>Confidence : '+confidence+'</p></div>';
+            message_bubble_div='<div class="message_bubble_user fallback" style="background-color:rgb(251, 255, 0);"'+custom_data_payload+' >'+element.text+'</div>';
+          }
+          else{
+            extra_div='<div class="message_details" style="float:right;"><p>Intent : '+element.parse_data.intent.name+'</p><p>Confidence : '+parseFloat(element.parse_data.intent.confidence).toFixed(2)+'</p></div>';
+            message_bubble_div='<div class="message_bubble_user non-fallback" '+custom_data_payload+' >'+element.text+'</div>';
+          }
+          
         }
         else{
           message_bubble_div='<div class="message_bubble_bot">'+element.text+'</div>';
@@ -426,6 +448,7 @@ $(function(){
   //function for loading messages upon conversation list item 
   //being clicked
   $(document).on( "click",'.conversation-item', function() {
+    
     var conversation_id=$(this).attr('id');
     empty_review_section();
     $('.conversation-item').removeClass('active');
@@ -501,7 +524,14 @@ $(function(){
   
   //click event for user sent messages for displaying intent data
   $(document).on("click",'.message_bubble_user', function() {
-    $('.message_bubble_user').css({"background-color": "#e1e5e6"});
+    
+    reset_before_rendering_review_section();
+    
+    if($(this).hasClass('fallback')){
+      render_review_section($(this));
+      return;
+    }
+    $('.non-fallback').css({"background-color": "#e1e5e6"});
     $(this).css({"background-color": "#b9bdbe"});
     render_review_section($(this));
   });
@@ -523,7 +553,7 @@ $(function(){
   $(document).on("input",'#selected_message', function() {
 
     if(message_object.latest_message==$.trim($('#selected_message').val())){
-      $('#btn-save-edit-message').attr('disabled',true);btn-review-msg
+      $('#btn-save-edit-message').attr('disabled',true);
       $('#btn-save-edit-message').text('Message Saved');
       is_message_saved=true;   
     }
@@ -654,8 +684,8 @@ $(function(){
       },
       error: function(){
        // $('#itemContainer').html('<i class="icon-heart-broken"> <?= $lang["NO_DATA"] ?>');
-       $('#review-details-error').show();
-       $('#review-details-error').text('Loading Intent list failed.');
+       $('#intent-name-not-available').show();
+        $('#intent-name-not-available').text('Some error occured !!');
       },
       complete:function(){
         $('#intent-search-loader').hide();
@@ -665,60 +695,81 @@ $(function(){
 
   
   $(document).on( "click",'#btn-review-msg', function() {
+    if(corrected_intent!=undefined && new_intent!=undefined){
+      alert('Intent can be either created or corrected. Please check your review.');
+      return;
+    }
+
+    delete a_training_example.intent_mapped_to;
+    //constructing training example for posting to the API
+    a_training_example.text=message_object.latest_message;
     
-    review_message();
+    //predicted intent will be used as the same intent
+    //this means only annotation is being performed
+    if(corrected_intent==undefined && new_intent==undefined){
+      a_training_example.intent=$('#predicted-intent').val();
+    }
+    else if (corrected_intent!=undefined){
+      a_training_example.intent=corrected_intent;
+      if($('#predicted-intent').val()!='nlu_fallback'){
+        //this means that predicted intent is mapped to intents other than fallback 
+        //and it is being changed to something else in existing training dataset
+        a_training_example.intent_mapped_to=$('#predicted-intent').val();
+      }
+    }
+    else if (new_intent!=undefined){
+      a_training_example.intent=corrected_intent;
+    }
+
+    a_training_example.entities=selected_entity_list;
     
+    //checking if the intent is changed rather than created as new one.
+    alert(JSON.stringify(a_training_example));
+    return;
+
+    upload_training_data();
+  });
+
+  function upload_training_data(){
+
     $.ajax({
-      type: 'GET',
-      url: 'http://127.0.0.1:5000/getIntentList',       //the script to call to get data
-      dataType: 'json',          
+      type: 'POST',
+      url: 'http://127.0.0.1:5000/update_intent',       //the script to call to get data
+      data: JSON.stringify({
+        'intent': corrected_intent,
+        'mapped_to':predicted_intent,
+        'sender_id':$('#selected_message').attr('data-conv-id'),
+        'message_timestamp': $('#selected_message').attr('data-msg-timestamp')
+      }), //add the data to the form          
       contentType: 'application/json; charset=utf-8',         //data format
       beforeSend:function(){
-        $('#intent-name-available').hide();
-        $('#intent-name-not-available').hide();
-        $('#intent-search-loader').show();
+        $('.message-under-review').hide();
+        $('.review-details-loader span').removeClass();
+        $('.review-details-loader span').addClass('fas fa-spinner fa-pulse');
+        $('.review-details-loader p').text('Updating Intent..');
+        $('.review-details-loader').show();
       },
       success: function(data){             //on recieve of reply
-      //  $.each($(data), function(key, value) {
-          //$('#itemContainer').append(value.user_id);
-       // });
-       var response=JSON.parse(data);
-       if (response.hasOwnProperty('error')){
-        $('#intent-name-not-available').show();
-        $('#intent-name-not-available').text(response.error);
-       }
-       else{
-         var intent_name=$('#txt_new_intent').val();
-         var intent_name_availability=true;
-        //$('#intent-name-available').show();
-        
-        $.each(response,function(index,intent_data){
-          if (intent_data.intent==intent_name){
-            intent_name_availability=false;
-            return false;
-          }
-        });
-        //#intent-search-loader,#intent-name-available,#intent-name-not-available
-        if(intent_name_availability){
-          $('#intent-name-available').show();
-        }
-        else{
-          $('#intent-name-not-available').show();
-        }
-       }
-       
+        var response=JSON.parse(data);
+        //alert(JSON.stringify(response));
       },
       error: function(){
        // $('#itemContainer').html('<i class="icon-heart-broken"> <?= $lang["NO_DATA"] ?>');
-       $('#review-details-error').show();
-       $('#review-details-error').text('Loading Intent list failed.');
+       $('#review-details-error p').text('error has occured');
+       $('#review-details-error p').show();
       },
       complete:function(){
-        $('#intent-search-loader').hide();
+        $('.review-details-loader span').removeClass();
+        $('.review-details-loader span').addClass('fas fa-check');
+        $('.review-details-loader p').text('Intent changed');
+        $('.review-details-loader').fadeOut(2000,function(){
+          $('.message-under-review').show();
+          $('.review-details-loader span').addClass('fas fa-spinner fa-pulse');
+        });
+        
       }
     });
-    
-  });
+  }
 
   function new_intent_generation(){
     $.ajax({
@@ -767,21 +818,19 @@ $(function(){
     });
   }
   
-  function review_message(){
-    //checking if review is intent correction or new intent creation
-    if($('.selectpicker').attr('disabled')===undefined){
-      alert('its intent correction');
-    }
-    else{
-      new_intent_generation();
-    }
-  }
 
   $(document).on( "select","#selected_message", function(e){
-    selected_entity=$.trim(window.getSelection().toString());
-    if(selected_entity.length!=0){
+    // this is important for creating new object
+    selected_entity=undefined;
+    
+    selected_entity=new Object();
+    selected_entity.value=$.trim(window.getSelection().toString());
+    selected_entity.start=$('#selected_message').prop('selectionStart'); //picks up starting position of selected text
+    selected_entity.end=$('#selected_message').prop('selectionEnd');
+
+    if(selected_entity.value.length!=0){
       $(this).popover('dispose');
-      $(this).attr({"data-entity-value":selected_entity,"data-toggle":"popover","data-placement":"bottom","data-html":"true" ,"data-content":"Create Entity for :  <b>'"+selected_entity+"'</b>"});
+      $(this).attr({"data-entity-value":selected_entity.value,"data-toggle":"popover","data-placement":"bottom","data-html":"true" ,"data-content":"Create Entity for :  <b>'"+selected_entity.value+"'</b>"});
       $(this).popover('show');
       
     }
@@ -790,7 +839,7 @@ $(function(){
   $(document).on("click",".popover",function(){
     if(is_message_saved){
     $(this).hide();
-    $('#entity-value').val(selected_entity);
+    $('#entity-value').val(selected_entity.value);
     }
     else{
       alert(`You have not saved the message change. Please save it first.`);
@@ -810,32 +859,47 @@ $(function(){
       return;
     }
 
-    var entity_name=$.trim($('#entity-name').val());
+    selected_entity.entity=$.trim($('#entity-name').val());
 
     //empty entity name
-    if(entity_name.length==0){
+    if(selected_entity.entity.length==0){
       alert('No Entity name specified');
       return ;
     }    
-    
-    if(selected_entity_list.indexOf(entity_name)!=-1){
-      alert('Entity Name already selected.');
-      return;
+
+    //for of for iterating over array
+    for(var entity of selected_entity_list){
+      if (entity.entity==selected_entity.entity){
+        alert('Entity Name already selected.');
+        return;
+      }
     }
-    else{
-      selected_entity_list.push(entity_name);
-      render_review_summary();
-      var list_item=`<li class="list-group-item d-flex justify-content-between align-items-center" data-entity-name="`+entity_name+`">
-                  '`+$('#entity-value').val()+`' As <b>'`+entity_name+`'</b>
+    
+    selected_entity_list.push(selected_entity);
+
+    render_review_summary();
+    
+    var list_item=`<li class="list-group-item d-flex justify-content-between align-items-center" data-entity-name="`+selected_entity.entity+`">
+                  '`+$('#entity-value').val()+`' As <b>'`+selected_entity.entity+`'</b>
                     <span class="fas fa-spinner fa-times"></span>
                   </li>`;
       $('#div-entity-list ul').prepend(list_item);
-    }
+
+    
   });
 
   //function for removing the entity name from the entity list 
   $(document).on("click","#div-entity-list span",function(){
-    selected_entity_list.pop($(this).parent().attr('data-entity-name'));
+    var to_remove=$(this).parent().attr('data-entity-name');
+    selected_entity_list=selected_entity_list.filter(entity=>{
+      if(entity.entity!=to_remove){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+
     render_review_summary();
     $(this).parent().remove();
   });
