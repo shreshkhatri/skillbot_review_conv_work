@@ -1,4 +1,3 @@
-
 $(function(){
 
   var a_training_example={};
@@ -18,6 +17,7 @@ $(function(){
   var allow_save_review=false;
 
   var incorrect_intent,confidence;
+  const regexp=/[^a-zA-Z_]+/; //regex for testing name of the intent and entity
 
   //object for holding message
   var message_object={
@@ -611,6 +611,10 @@ $(function(){
       alert('Sorry Intent name already exists');
       return;
     }
+    else if (regexp.test($.trim($('#txt_new_intent').val()))){
+      alert('Only alphabets and underscore characters are accepted.');
+      return ;
+    }
     else{
       new_intent=$.trim($('#txt_new_intent').val());
       render_review_summary();
@@ -867,8 +871,17 @@ $(function(){
       return ;
     }    
 
+    if (regexp.test(selected_entity.entity)){
+      alert('Only alphabets and underscore characters are accepted.');
+      return ;
+    }
+
     //for of for iterating over array
     for(var entity of selected_entity_list){
+      if (entity.value==selected_entity.value){
+        alert('The Entity has been already annotated.');
+        return;
+      }
       if (entity.entity==selected_entity.entity){
         alert('Entity Name already selected.');
         return;
@@ -908,4 +921,3 @@ $(function(){
   load_aConversation($('#conversation_list li').first().attr('id'));
   
 });
-
