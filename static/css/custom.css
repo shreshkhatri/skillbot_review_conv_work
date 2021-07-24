@@ -39,8 +39,9 @@ body{
 .review-section{
   height: 31.25em;
   overflow-y: auto;
-  padding: 2em 4em;
+  padding: 2em 3em;
 }
+
 .conv-item{
   margin:.5em;
 }
@@ -83,7 +84,6 @@ margin-left: 4em;
   font-size: 2em; 
   text-align: center; 
   padding-top: 50%; 
-  display: none;
 }
 
 #review-details-error p{
@@ -95,7 +95,8 @@ margin-left: 4em;
 .review-details-loader{
   font-size: 3em; 
   text-align: center; 
-  padding-top: 48%; 
+  padding-top: 40%; 
+  padding-left: 40%; 
   color: #292b2c;   
 }
 .review-details-loader p{
@@ -193,6 +194,7 @@ margin-left: 4em;
 /****************************************  CSS DEFINITION FOR REVIEW SECTION CONTAINER **************************************************************/
 .message-under-review{
   color: inherit;
+  width: 100%;
 }
 .predicted-intent{
   color: inherit;
