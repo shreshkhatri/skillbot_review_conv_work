@@ -1,5 +1,7 @@
 $(function(){
 
+  var confidence_value=$('#confidence-level').val();
+  var conversation_id;
   var a_training_example={};
   var is_message_saved=true;
   var intent_name_availability=undefined;
@@ -18,7 +20,7 @@ $(function(){
 
   var incorrect_intent,confidence;
   const regexp=/[^a-zA-Z_]+/; //regex for testing name of the intent and entity
-
+  const max_len=15;
   //object for holding message
   var message_object={
     latest_message:'',
@@ -33,6 +35,13 @@ $(function(){
     predicted_intent=undefined;
     selected_entity_list=[];
   }
+  
+  $(document).on('change','#confidence-level',function(){
+    confidence_value=$(this).val();
+    $('#confidence-value').val(confidence_value);
+    load_aConversation(conversation_id);
+    empty_review_section();
+  });
 
 
   //function for detecting change falue of select picker
@@ -151,6 +160,14 @@ $(function(){
   });
 
   $(document).on('change','#entity-name',function(){
+    if (regexp.test($(this).val())){
+      alert('Only alphabets and underscore characters are accepted.');
+      return ;
+    }
+    if($(this).val().length>max_len){
+      alert(`Only Maximum ${max_len}  characters allowed in the name.`);
+      return ;
+    }
     check_entity_name($(this));
   });
 
@@ -158,6 +175,7 @@ $(function(){
   //function for clearing review section
   function empty_review_section(){
     $('.message-under-review').empty();
+    $('#review-details-error').empty();
   }
 
   //function for rendering review section after user message is clicked
@@ -368,12 +386,19 @@ $(function(){
           custom_data_payload+='data-message="'+element.text+'" ';
           custom_data_payload+='data-intent-name="'+element.parse_data.intent.name+'" ';
 
-          if (element.parse_data.intent.name=='nlu_fallback'){
+          if (element.parse_data.intent.name=='nlu_fallback'){ //we do need to highlight the messages identified as fallback intent
             incorrect_intent=element.parse_data.intent_ranking[1].name;
             confidence=element.parse_data.intent_ranking[1].confidence;
             confidence=parseFloat(confidence).toFixed(2);
             extra_div='<div class="message_details " style="float:right;"><p>Intent : '+incorrect_intent+'</p><p>Confidence : '+confidence+'</p></div>';
-            message_bubble_div='<div class="message_bubble_user fallback" style="background-color:rgb(251, 255, 0);"'+custom_data_payload+' >'+element.text+'</div>';
+            message_bubble_div='<div class="message_bubble_user fallback bg-warning"'+custom_data_payload+' >'+element.text+'</div>';
+          }
+          else if(element.parse_data.intent.confidence<=confidence_value){ //aditionally we want to highlight messages that have confidence lower than selected threshold value
+            incorrect_intent=element.parse_data.intent.name;
+            confidence=element.parse_data.intent.confidence;
+            confidence=parseFloat(confidence).toFixed(2);
+            extra_div='<div class="message_details " style="float:right;"><p>Intent : '+incorrect_intent+'</p><p>Confidence : '+confidence+'</p></div>';
+            message_bubble_div='<div class="message_bubble_user fallback bg-warning" '+custom_data_payload+' >'+element.text+'</div>';
           }
           else{
             extra_div='<div class="message_details" style="float:right;"><p>Intent : '+element.parse_data.intent.name+'</p><p>Confidence : '+parseFloat(element.parse_data.intent.confidence).toFixed(2)+'</p></div>';
@@ -429,7 +454,7 @@ $(function(){
         $('#message_container').text(response.error);
        }
        else{
-         $('.conversation-item:first').addClass('active');
+         
         load_messages(response.events,conversation_id);
        }
        
@@ -449,7 +474,7 @@ $(function(){
   //being clicked
   $(document).on( "click",'.conversation-item', function() {
     
-    var conversation_id=$(this).attr('id');
+    conversation_id=$(this).attr('id');
     empty_review_section();
     $('.conversation-item').removeClass('active');
     $(this).addClass('active');
@@ -615,6 +640,10 @@ $(function(){
       alert('Only alphabets and underscore characters are accepted.');
       return ;
     }
+    else if ($('#txt_new_intent').val().length>max_len){
+      alert(`Only Maximum ${max_len}  characters allowed in the name.`);
+      return ;
+    }
     else{
       new_intent=$.trim($('#txt_new_intent').val());
       render_review_summary();
@@ -637,11 +666,21 @@ $(function(){
   //function for verifying intent name
   $(document).on( "change",'#txt_new_intent', function() {
 
+    if (regexp.test($(this).val())){
+      alert('Only alphabets and underscore characters are accepted.');
+      return ;
+    }
+    else if($(this).val().length>max_len){
+      alert(`Only Maximum ${max_len}  characters allowed in the name.`);
+      return;
+    }
+
     if($(this).val().length==0){
       $('#intent-name-available').hide();
       $('#intent-name-not-available').hide();
       return; 
     }
+
     
     $.ajax({
       type: 'GET',
@@ -678,10 +717,14 @@ $(function(){
         
         //#intent-search-loader,#intent-name-available,#intent-name-not-available
         if(intent_name_availability){
-          $('#intent-name-available').show();
+          $('#intent-name-available').fadeIn('slow',()=>{
+            $('#intent-name-available').fadeOut('slow');
+          });
         }
         else{
-          $('#intent-name-not-available').show();
+          $('#intent-name-not-available').fadeIn('slow',()=>{
+            $('#intent-name-not-available').fadeOut('slow');
+          });
         }
        }
        
@@ -722,7 +765,7 @@ $(function(){
       }
     }
     else if (new_intent!=undefined){
-      a_training_example.intent=corrected_intent;
+      a_training_example.intent=new_intent;
     }
 
     a_training_example.entities=selected_entity_list;
@@ -918,6 +961,8 @@ $(function(){
   });
 
  //calling conversation loader method with the conversation id of first conversation item
-  load_aConversation($('#conversation_list li').first().attr('id'));
+ conversation_id=$('#conversation_list li').first().attr('id');
+ $('.conversation-item:first').addClass('active');
+ load_aConversation(conversation_id);
   
 });
