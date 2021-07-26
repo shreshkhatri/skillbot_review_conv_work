@@ -96,7 +96,7 @@ margin-left: 4em;
   font-size: 3em; 
   text-align: center; 
   padding-top: 40%; 
-  padding-left: 40%; 
+  padding-left: 20%; 
   color: #292b2c;   
 }
 .review-details-loader p{
@@ -340,4 +340,13 @@ margin-left: 4em;
 
 #selected-intent-name i{
   padding-left: .5em;
+}
+
+#confidence-value{
+  width:2.5rem;
+  margin-left: .5rem;
+}
+
+.confidence-row{
+  padding: .5rem .5rem;
 }

@@ -20,7 +20,7 @@ $(function(){
 
   var incorrect_intent,confidence;
   const regexp=/[^a-zA-Z_]+/; //regex for testing name of the intent and entity
-  const max_len=15;
+  const max_len=25;
   //object for holding message
   var message_object={
     latest_message:'',
@@ -772,7 +772,6 @@ $(function(){
     
     //checking if the intent is changed rather than created as new one.
     alert(JSON.stringify(a_training_example));
-    return;
 
     upload_training_data();
   });
@@ -781,24 +780,24 @@ $(function(){
 
     $.ajax({
       type: 'POST',
-      url: 'http://127.0.0.1:5000/update_intent',       //the script to call to get data
+      url: 'http://127.0.0.1:5000/uploadTrainingdata',       //the script to call to get data
       data: JSON.stringify({
-        'intent': corrected_intent,
-        'mapped_to':predicted_intent,
-        'sender_id':$('#selected_message').attr('data-conv-id'),
-        'message_timestamp': $('#selected_message').attr('data-msg-timestamp')
+        'text':a_training_example.text,
+        'intent': a_training_example.intent,
+        'entities':a_training_example.entities,
+        'intent_mapped_to':a_training_example.intent_mapped_to==undefined?'':a_training_example.intent_mapped_to
       }), //add the data to the form          
       contentType: 'application/json; charset=utf-8',         //data format
       beforeSend:function(){
         $('.message-under-review').hide();
         $('.review-details-loader span').removeClass();
         $('.review-details-loader span').addClass('fas fa-spinner fa-pulse');
-        $('.review-details-loader p').text('Updating Intent..');
+        $('.review-details-loader p').text('Uploading Training data...');
         $('.review-details-loader').show();
       },
       success: function(data){             //on recieve of reply
         var response=JSON.parse(data);
-        //alert(JSON.stringify(response));
+        alert(JSON.stringify(response));
       },
       error: function(){
        // $('#itemContainer').html('<i class="icon-heart-broken"> <?= $lang["NO_DATA"] ?>');
@@ -808,7 +807,7 @@ $(function(){
       complete:function(){
         $('.review-details-loader span').removeClass();
         $('.review-details-loader span').addClass('fas fa-check');
-        $('.review-details-loader p').text('Intent changed');
+        $('.review-details-loader p').text('Training data uploaded successfully.');
         $('.review-details-loader').fadeOut(2000,function(){
           $('.message-under-review').show();
           $('.review-details-loader span').addClass('fas fa-spinner fa-pulse');

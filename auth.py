@@ -9,14 +9,11 @@ def performauthentication(username,password):
     }
     # convert into JSON:
     authpayload = json.dumps(authpayload)
-
-    response=requests.post(' http://localhost:5002/api/auth', data=authpayload)
-    jsonbody=response.json()
-    bearer_token=jsonbody['access_token']
-
-    if bearer_token!=None:
+    try:
+        response=requests.post(' http://localhost:5002/api/auth', data=authpayload)
+        jsonbody=response.json()
+        bearer_token=jsonbody['access_token']
         return bearer_token
-    else:
-        return False
-#performauthentication("me","67pmRgJV4dQp")
+    except:
+        return {'error_message': 'Authentication Error occured.\nYou might need to update authentication password'}
 

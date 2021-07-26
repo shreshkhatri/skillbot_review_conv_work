@@ -1,3 +1,4 @@
+import sys
 from flask import Flask,render_template,request
 from flask_fontawesome import FontAwesome
 import auth, api_calls, helper
@@ -10,7 +11,10 @@ app.debug=True
 #Scss(app,static_dir='static/css',asset_dir='static/sass')
 fa = FontAwesome(app)
 
-bearer_token=auth.performauthentication('me','qlopO8wPZS7O')
+bearer_token=auth.performauthentication('me','Iybdw0cCbLyt')
+if 'error_message' in bearer_token:
+    sys.exit(bearer_token['error_message'])
+
 
 @app.route('/getEntityList')
 def get_entity_list():
@@ -27,7 +31,7 @@ def update_intent():
     else:
         return json.dumps({'response':False})
 
-@app.route('/uploadNewTrainingdata',methods=['POST'])
+@app.route('/uploadTrainingdata',methods=['POST'])
 def upload_new_trainingdata():
     incoming_JSON=request.get_json()
     response=api_calls.upload_training_data(bearer_token,incoming_JSON)
