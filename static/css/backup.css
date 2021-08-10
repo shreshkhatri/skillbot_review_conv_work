@@ -1,0 +1,342 @@
+body{
+    font-size: .7em;
+  }
+  
+  .input-font-style{
+    font-size: .9em; 
+    height:2.5em;
+    margin-top: .5em;
+  }
+  
+  .btn-custom-style{
+    font-size: .9em; 
+    height:2.5em;
+  }
+  
+  .zeroth-row{
+    height: 3.125em;
+  }
+  .first-row{
+    height: 31.25em;
+  }
+  
+  .second-row{
+    padding-top: .5em;
+  }
+  
+  .main-container{
+    height: 37.5px;
+    margin-top: 2em;
+  }
+  
+  /****************************************************** FIRST ROW CONTAINER CLASSES DEFINITION *****************************/
+  .col-conversation-list ,.col-conversation{
+  
+    height: 31.25em;
+    overflow-y: auto;
+  }
+  
+  .review-section{
+    height: 31.25em;
+    overflow-y: auto;
+    padding: 2em 4em;
+  }
+  .conv-item{
+    margin:.5em;
+  }
+  
+  .circular-avatar{
+    font-size: 3em;
+    float: left;
+    padding-right: .5em;
+  }
+  
+  .marker{
+  margin-left: 4em;
+  }
+  
+  .marker:hover{
+    text-decoration: underline;
+  }
+  
+  #no_conversation_list{
+    text-align: center;
+    margin-top: 50%;
+  }
+  
+  #no_single_conv{
+    text-align: center;
+    margin-top: 30%;
+  }
+  
+  
+  /*************************************** CSS RELATED TO CONVERSATION ITEM   ************************************************/
+  .conv-detail{
+    font-size: .9em;
+  }
+  
+  .conv-detail p{
+    margin: 0; padding: 0;
+  }
+  
+  #review-details-error{
+    font-size: 2em; 
+    text-align: center; 
+    padding-top: 50%; 
+    display: none;
+  }
+  
+  #review-details-error p{
+    font-size: .5em;
+    text-align: center;
+  }
+  
+  /*************************** DEFINING LOADER BGINNING****************************************************/
+  .review-details-loader{
+    font-size: 3em; 
+    text-align: center; 
+    padding-top: 48%; 
+    color: #292b2c;   
+  }
+  .review-details-loader p{
+    font-size: .4em;
+    text-align: center;
+  }
+  
+  .message_loader {
+    margin-top: 40%;
+    margin-left: 45%;
+    border: .5em solid #f3f3f3;
+    border-radius: 50%;
+    border-top: .5em solid rgb(115, 115, 121);
+    border-bottom: .5em solid rgb(169, 169, 177);
+    width: 5em;
+    height: 5em;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+  }
+  
+  .conv-list-loader {
+    margin-top: 40%;
+    margin-left: 45%;
+    border: .5em solid #f3f3f3;
+    border-radius: 50%;
+    border-top: .5em solid rgb(115, 115, 121);
+    border-bottom: .5em solid rgb(169, 169, 177);
+    width: 5em;
+    height: 5em;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+  }
+  
+  
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /*************************** DEFINING LOADER ENDING ****************************************************/
+  
+  .message{
+      min-height: 3.5em;
+      width: 100%;
+      padding:1em 1.5em;
+      overflow:auto;
+      
+  }
+  .message_bubble_user{
+      font-size: .9em;
+      padding: .7em 2em;
+      background-color: #e1e5e6;
+      float: right;
+      border-radius: 1em;
+      box-shadow: 1px 2px;
+      max-width: 45%;
+      word-wrap: break-word;
+  }
+  
+  .message_bubble_bot{
+      padding: .7em 2em;
+      font-size: .9em;
+      background-color: #aba1ed;
+      text-align: start;
+      float: left;
+      border-radius: 1em;  
+      box-shadow: 1px 2px; 
+      max-width: 45%;   
+  }
+  
+  #message_container{
+      color: inherit;
+  }
+  
+  .message_details{
+    padding: .5em;
+    margin-top: .25em;
+    font-size: .8em;
+    color: cadetblue;
+  }
+  
+  .message_details p{
+    margin:0;padding: 0;
+  }
+  
+  .message_bubble_user:hover{
+    background-color: #b9bdbe;
+  }
+  
+  /****************************************  CSS DEFINITION FOR REVIEW SECTION CONTAINER **************************************************************/
+  .message-under-review{
+    color: inherit;
+  }
+  .predicted-intent{
+    color: inherit;
+  }
+  
+  .btn-change-intent{
+    color: inherit;
+  }
+  
+  
+  /******************************** CSS FOR COLOR MODIFICATION FOR POPOVER **************************************/
+  
+  .popover-header{
+    font-size:.7em;
+  }
+  
+  .popover-body{
+    font-size: .7em;
+  }
+  
+  /***********************************  REVIEW SECTION   ********************************************************/
+  .review-summary{
+    min-height:3em; 
+    margin-top: 1em; 
+    margin-bottom: 1em;
+  }
+  
+  .a-review{
+    height: 1.5em;
+    color: goldenrod;
+  }
+  
+  .a-review span{
+    float: left; 
+    padding-top: .5em; 
+    padding-right: .5em; 
+    font-size: .8em;
+  }
+  .a-review-message{
+    font-size: .9em;
+  }
+  /***************************** CSS FOR SLIDER ON accordion SECTION ***********************************************/
+  .custom-card-header{
+    height: 2.5em; 
+    padding:0em 0em;
+    margin-top: .5em;
+  }
+  /****************************************************************************************************************/
+  .div-new-entity-result{
+    float: left; 
+    min-height: 2em; 
+    width: 100%; 
+    margin-top: 1em; 
+    font-size: .9em;
+  }
+  
+  .div-new-entity-result span{
+    float: left;  font-size:1.3em;  margin-right: .5em;
+  }
+  
+  #entity-search-loader{
+    color: #292b2c;
+  }
+  #entity-search-loader span{
+    font-size: 1em;
+    padding-top: .4em;
+  }
+  
+  #entity-name-available{
+    color: goldenrod;
+  }
+  
+  #entity-name-available span{
+    padding-top: .5em;
+    font-size: .9em;
+  }
+  #entity-name-available p{
+    text-decoration: underline;
+    cursor: pointer;
+    width: auto;
+  }
+  
+  #entity-name-not-available{
+    color:red;
+  }
+  
+  #div-entity-list li{
+    height: 1em; margin-top: .3em;
+  }
+  
+  /************************************************** SELECT PICKER CUSTOMIZATION *******************************/
+  
+  .custom-selectpicker-option{
+    font-size: .7em; width: 100%; height: 1.5em; padding-top:0em;
+  }
+  
+  .div-new-intent{
+    min-height: 6em; padding:.5em; margin-top: .5em;
+  }
+  
+  .div-new-intent p{
+    margin-left: 1.5em;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .div-new-intent-result{
+    float: left; width: 100%; margin-top: .5em; font-size: .9em;
+    min-height: 3em;
+  }
+  
+  
+  .div-new-intent-result span{ 
+    float: left;  font-size:1.3em;
+  }
+  
+  #intent-search-loader{
+    color: #292b2c;
+  }
+  
+  #intent-search-loader span{
+    float: left;  font-size:1.3em; 
+  }
+  
+  #intent-name-available{
+    color: goldenrod;
+  }
+  
+  #intent-name-available{
+    float: left; padding-top: .2em; padding-right: .5em;
+  }
+  #intent-name-not-available{
+    color: red;
+  }
+  
+  #intent-name-not-available{
+    float: left; padding-top: .2em; padding-right: .5em;
+  }
+  
+  .card-body{
+    padding: 1em 1em;
+  }
+  
+  #selected-intent-name i{
+    padding-left: .5em;
+  }
+  

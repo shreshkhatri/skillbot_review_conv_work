@@ -1,0 +1,155 @@
+<div class="message-under-review" style="display: none;">
+  
+  <b>Selected Message</b><input type="text" id="selected_message" class="form-control form-control-sm input-font-style"
+    aria-label="message under review" aria-describedby="basic-addon2" autocomplete="off"
+    value="`+this_object.attr('data-message')+`" data-msg-timestamp="`+this_object.attr('data-message_timestamp')+`"
+    data-conv-id="`+this_object.attr('data-conversation_id')+`">
+  <button id="btn-save-edit-message" class="btn btn-primary btn-sm btn-custom-style" type="button" disabled>Message
+    Saved</button>
+  <br /><br />
+  <b>Predicted Intent</b>
+  <input type="text" class="form-control form-control-sm input-font-style" id="predicted-intent"
+    value="`+this_object.attr('data-intent-name')+`" readonly>
+  <br />
+  <div class="accordion" id="accordionExample">
+    <div class="card border rounded">
+      <div class="card-header custom-card-header" id="headingOne">
+        <p class="mb-0">
+          <button class="btn btn-link btn-custom-style" type="button" data-toggle="collapse" data-target="#collapseOne"
+            aria-expanded="true" aria-controls="collapseOne">
+            Entity Annotation
+          </button>
+        </p>
+      </div>
+
+      <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+        <div class="card-body">
+          <div id="div-entity-section"><b>Entity Details</b>
+            <input type="text" class="form-control form-control-sm input-font-style" id="entity-value"
+              value="Nothing selected" readonly>
+            <input type="text" class="form-control form-control-sm input-font-style" id="entity-name"
+              placeholder="Entity Name" autocomplete="off">
+
+            <div class="div-new-entity-result">
+              <div id="entity-search-loader" style="display: none;">
+                <span class="fas fa-spinner fa-pulse"></span>
+                <p style="margin-left: .5em;"> Checking Entity name availability</p>
+              </div>
+              <div id="entity-name-available" style="display: none;"> 
+                <div style="color: black; text-decoration: none;">Similar Entities</div>
+                <span class="fas fa-check"></span>
+                <p style="margin-left: .5em;">Entity name available</p>
+              </div>
+              <div id="entity-name-not-available" style="display: none;">
+                <span class="fas fa-times"></span>
+                <p style="margin-left: .5em; ">Entity already exists.</p>
+              </div>
+            </div>
+            <br/><br/>
+            <button id="btn-create-entity" type="button" class="btn btn-sm btn-primary btn-custom-style">Select
+              Entity</button>
+            <div id="div-entity-list"><br />
+              <b>Entity List</b>
+              <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Cras justo odio
+                  <span class="fas fa-spinner fa-times"></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Dapibus ac facilisis in
+                  <span class="fas fa-spinner fa-times"></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Morbi leo risus
+                  <span class="fas fa-spinner fa-times"></span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card border rounded">
+      <div class="card-header custom-card-header" id="headingTwo">
+        <p class="mb-0">
+          <button class="btn btn-link collapsed  btn-custom-style" type="button" data-toggle="collapse"
+            data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            Intent Correction
+          </button>
+        </p>
+      </div>
+      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+        <div class="card-body">
+          <b>Change Intent</b><br />
+          <form>
+            <div class="form-group row">
+              <div class="col-sm-12">
+                <select class="form-control form-control-sm selectpicker" data-size="5" data-show-subtext="true"
+                  id="select-intent" data-live-search="true">
+                  <option class="custom-selectpicker-option" data-tokens="xya">tokens</option>
+                </select>
+              </div>
+            </div>
+          </form>
+          <p style="text-align: center;">or</p>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="checkbox-create-intent">
+            <label class="form-check-label" for="exampleCheck1">Create New Intent</label>
+          </div>
+          <div class="div-new-intent border rounded">
+            <input type="text" id="txt_new_intent" class="form-control form-control-sm input-font-style"
+              aria-label="new intent" aria-describedby="basic-addon2" placeholder="New intent" autocomplete="off"
+              disabled>
+            <div class="div-new-intent-result">
+              <div id="intent-search-loader" style="display: none;">
+                <span class="fas fa-spinner fa-pulse"></span>
+                <p>Checking name availability</p>
+              </div>
+              <div id="intent-name-available">
+                <span class="fas fa-check"></span>
+                <p>Intent name available</p>
+              </div>
+              <div id="intent-name-not-available" style="display: none;">
+                <span class="fas fa-times"></span>
+                <p>Intent already exists.</p>
+              </div>
+              <div id="selected-intent-name" style="display: none;">
+                <p>gsdfgsdfgsdfgs <i class="fas fa-times"></i></p>
+              </div>
+            </div>
+            <button id="btn-create-intent" type="button" class="btn btn-sm btn-primary btn-custom-style">Select
+              Intent</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br />
+  <b>Review Summary</b><br />
+  <div class="review-summary">
+    <div class="a-review">
+      <p classs="a-review-message" style="color: black;">No Review Made yet</p>
+    </div>
+    <div class="a-review">
+      <span class="fas fa-check"></span>
+      <p classs="a-review-message">Entity annotated.</p>
+    </div>
+    <div class="a-review">
+      <span class="fas fa-check"></span>
+      <p class="a-review-message">Intent corrected</p>
+    </div>
+
+  </div>
+  <button id="btn-review-msg" type="button" class="btn btn-sm btn-primary" style="font-size: .9em; height:2.5em;">Save
+    Review</button>
+  
+</div>
+<div class="review-details-loader"  style="display: none;">
+  <span></span>
+  <p></p>
+</div>
+
+<div id="review-details-error" style="display: none;">
+  <p>Something went wrong. Please try again later.</p>
+</div>

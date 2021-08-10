@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container main-container">
+  <div id="nav-row" class="row ">
+    <div class="col-md-12 justify-content-center" style="padding: 0em;">
+      {% include 'navigation.html' %}
+    </div>
+  </div>
+  <div id="unreviewed-conversations" class="row " >
+    <div class="col">
+      <div class="row dateselection-row">
+        <div class="col-md-12 ">
+          <div class="row ">
+            <div class="col-md-auto">Select Conversations From</div>
+            <div class="col-md-auto "><input id="initial-date" type="date"></div>
+            <div class="col-md-auto">To :</div>
+            <div class="col-md-auto"><input id="final-date" type="date"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4 col-sm-6">
+          <div class="row border  bg-info justify-content-center">
+            <h6>Conversations List</h6>
+          </div>
+          <div class="row col-conversation-list border border-info rounded">
+            <div class="conv-list-loader" style="display: none;"></div>
+            {% if (no_conversation_list!=True) %}
+            <div id="conversation_list" class="list-group ">
+              {% for item in conv %}
+              <!--selecting only items having user messages -->
+              {% if (item.n_user_messages!=0 )%}
+              {% include 'conversation_item.html' %}
+              {% endif %}
+              {% endfor %}
+            </div>
+            {% else %}
+            {% include 'no_conversation_list.html' %}
+            {% endif %}
+          </div>
+          <div class="row second-row">
+            <button id="conversation-list-reloader" class="btn btn-sm btn-primary">Refresh List</button>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="row  border border-secondary  bg-info justify-content-center">
+            <h6>Conversation</h6>
+          </div>
+          <div class="row col-conversation border border-info rounded">
+            {% if (no_conversation_list!=True) %}
+            {% include 'conversation_layout.html' %}
+            {% else %}
+            {% include 'no_single_conv.html' %}
+            {% endif %}
+          </div>
+          <div class="row confidence-row">
+            <label for="confidence_value" style="padding-top: .3rem;">Confidence Value : </label>
+            <input type="range" id="confidence-level" name="confidence_value" min="0" max="1" step="0.01" value="0.3">
+            <input type="text" class="form-control form-control-sm input-font-style" id="confidence-value" size="5"
+              value="0.3" readonly>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="row border border-secondary  bg-info justify-content-center">
+            <h6>Review Section</h6>
+          </div>
+          <div class="row review-section border border-info rounded">
+            {% include 'review_section.html' %}
+          </div>
+          <div class="row "></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="reviewed-conversations" class="row" style="display: none;">
+    <div class="col">
+      <div class="row single-review-row">
+        <div class="col">
+          <div class="row  border-bottom border-dark"><h6>Reviewed conversations on, February 20, 2021</h6></div>
+          <div class="row">
+            <div class="table-responsive">
+              <table class="table table-sm table-hover ">
+                <thead>
+                  <tr>
+                    <th scope="col">Conversation ID</th>
+                    <th scope="col">Conversation Start Date</th>
+                    
+                    <th scope="col">Reviewed By</th>
+                    <th scope="col">New messages</th>
+                    <th scope="col">Last Active</th>
+                    <th scope="col">Option</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td scope="row">39267fd8891c4dcc93650edcb1c5c03b</td>
+                    <td>24-06-2021</td>
+                    
+                    <td>user1</td>
+                    <td>5</td>
+                    <td>2 weeks ago</td>
+                    <td><button type="button" class="btn btn-link btn-sm">Review Again</button></td>
+                  </tr>
+                  <tr>
+                    <td scope="row">fef96419eb7d466382e86c5c430b6d5e</td>
+                    <td>02-03-2021</td>
+                    
+                    <td>user1</td>
+                    <td>15</td>
+                    <td>2 weeks ago</td>
+                    <td><button type="button" class="btn btn-link btn-sm">Review Again</button></td>
+                  </tr>
+                  <tr>
+                    <td scope="row">cda6c3e453d04dcdbd27d2e102155522</td>
+                    <td>15-03-2021</td>
+                    
+                    <td>user2</td>
+                    <td>10</td>
+                    <td>2 weeks ago</td>
+                    <td><button type="button" class="btn btn-link btn-sm">Review Again</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>            
+          </div>
+        </div>
+      </div>
+      <div class="row single-review-row">
+        <div class="col">
+          <div class="row  border-bottom border-dark"><h6>Reviewed conversations on, March 25, 2021</h6></div>
+          <div class="row">
+            <div class="table-responsive">
+              <table class="table table-sm table-hover ">
+                <thead>
+                  <tr>
+                    <th scope="col">Conversation ID</th>
+                    <th scope="col">Conversation Start Date</th>
+                    <th scope="col">Reviewed By</th>
+                    <th scope="col">New messages</th>
+                    <th scope="col">Last Active</th>
+                    <th scope="col">Option</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td scope="row">39267fd8891c4dcc93650edcb1c5c03b</td>
+                    <td>24-06-2021</td>
+                    
+                    <td>user1</td>
+                    <td>5</td>
+                    <td>2 weeks ago</td>
+                    <td><button type="button" class="btn btn-link btn-sm">Review Again</button></td>
+                  </tr>
+                  <tr>
+                    <td scope="row">fef96419eb7d466382e86c5c430b6d5e</td>
+                    <td>02-03-2021</td>
+                    
+                    <td>user1</td>
+                    <td>15</td>
+                    <td>2 weeks ago</td>
+                    <td><button type="button" class="btn btn-link btn-sm">Review Again</button></td>
+                  </tr>
+                  <tr>
+                    <td scope="row">cda6c3e453d04dcdbd27d2e102155522</td>
+                    <td>15-03-2021</td>
+                    
+                    <td>user2</td>
+                    <td>10</td>
+                    <td>2 weeks ago</td>
+                    <td><button type="button" class="btn btn-link btn-sm">Review Again</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>            
+          </div>
+        </div>
+      </div>
+      <div class="row single-review-row">
+        <div class="col">
+          <div class="row  border-bottom border-dark"><h6>Reviewed conversations on, June 2, 2021</h6></div>
+          <div class="row">
+            <div class="table-responsive">
+              <table class="table table-sm table-hover ">
+                <thead>
+                  <tr>
+                    <th scope="col">Conversation ID</th>
+                    <th scope="col">Conversation Start Date</th>
+                    
+                    <th scope="col">Reviewed By</th>
+                    <th scope="col">New messages</th>
+                    <th scope="col">Last Active</th>
+                    <th scope="col">Option</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td scope="row">39267fd8891c4dcc93650edcb1c5c03b</td>
+                    <td>24-06-2021</td>
+                    
+                    <td>user1</td>
+                    <td>5</td>
+                    <td>2 weeks ago</td>
+                    <td><button type="button" class="btn btn-link btn-sm">Review Again</button></td>
+                  </tr>
+                  <tr>
+                    <td scope="row">fef96419eb7d466382e86c5c430b6d5e</td>
+                    <td>02-03-2021</td>
+                    
+                    <td>user1</td>
+                    <td>15</td>
+                    <td>2 weeks ago</td>
+                    <td><button type="button" class="btn btn-link btn-sm">Review Again</button></td>
+                  </tr>
+                  <tr>
+                    <td scope="row">cda6c3e453d04dcdbd27d2e102155522</td>
+                    <td>15-03-2021</td>
+                    
+                    <td>user2</td>
+                    <td>10</td>
+                    <td>2 weeks ago</td>
+                    <td><button type="button" class="btn btn-link btn-sm">Review Again</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="review-history" class="row" style="display: none;">
+    <div class="col">
+      <p>
+        Reviewe history
+      </p>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
