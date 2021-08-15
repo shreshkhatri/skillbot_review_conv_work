@@ -1,3 +1,23 @@
 .single-review-row{
     margin-bottom: 3em;
 }
+
+#reviewed-message-loader{
+    height: inherit; padding-top: 16em;
+}
+
+#reviewed-message-loader i{
+    margin-left: .5em;font-size: 2em;
+}
+
+#reviewed-message-loader p{
+    font-size: 1.2em;
+}
+
+#query-result{
+    height: inherit; padding-top: 16em;
+}
+
+#query-result p{
+    font-size: 1.2em;
+}

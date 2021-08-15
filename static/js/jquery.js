@@ -1,7 +1,9 @@
 import {navigation_items_array, nav_item_click_handler} from './navitem.js';
 import { unreviewed_message_counter,pushConvItem,popConvItem,returnConvItem, mark_as_reviewed} from './mark_conversation_reviewed.js';
 import {date_object} from './date_manipulation.js';
-
+import {load_unreviewed_conversations} from './mongo_unreviewed_conversation.js';
+import {mark_conversation_as_unreviewed} from './mongo_reviewed_conversation.js';
+import {format_all_datetime} from './atpageload.js';
 import {displayModal,displayReviewConversaitonModal} from './modal.js';
 
 $(function(){
@@ -44,11 +46,15 @@ $(function(){
 
     if($(this).attr('id')=='initial-date'){
       date_object.setInitialDate(moment().format($(this).val()));
-      date_object.checkDatesConsistency();
+      if(date_object.checkDatesConsistency()){
+        load_unreviewed_conversations(date_object.initial_date,date_object.final_date);
+      }
     }
     else if ($(this).attr('id')=='final-date'){
       date_object.setFinalDate(moment().format($(this).val()));
-      date_object.checkDatesConsistency();
+      if(date_object.checkDatesConsistency()){
+        load_unreviewed_conversations(date_object.initial_date,date_object.final_date);
+      }
     }
   
   });
@@ -84,7 +90,7 @@ $(function(){
   $(document).on('click','#btn-move-confirm',function(e){
     try{
       var c_id=$(this).parents('li').attr('id');
-      var resp=mark_as_reviewed(c_id,'reviewed');
+      var resp=mark_as_reviewed(c_id);
       if(typeof resp=='string'){
         displayModal('ERROR !',resp);
         return;
@@ -125,6 +131,11 @@ $(function(){
     }
     
     e.stopPropagation();
+  });
+
+//defining handler for 'Review Message' button
+  $(document).on('click','.btn-unmark-conversation',function(){
+    mark_conversation_as_unreviewed($(this));
   });
   
   $(document).on('change','#confidence-level',function(){
@@ -443,24 +454,7 @@ $(function(){
     });
   }
 
-  //function for rendering conversation list
-  function render_convesation_list(conversation_array){    
-    var list_count=0;
-    conversation_array.forEach(item => {
-      if(item.n_user_messages!=0){
-        var time=new Date(parseInt(item.latest_event_time)*1000).toLocaleString();
-        var usericon='<div class="col-md-2 col-sm-2 "><span class="fas fa-user-circle circular-avatar"></span></div>';
-        var message_details='<div class="col-md-6 col-sm-6 conv-detail">';
-        message_details+= 'Reviewe Status : '+item.review_status+'<br/>Time:  '+time+'</div>';
-        var marker='<div class="col-md-4 col-sm-4 mark-review" style="font-size: .85em;"><p class="marker" style="cursor: pointer;">Mark as Reviewed</p></div>';
-        var aRow='<div class="row">'+usericon+message_details+marker+'</div>';
-        var itemContainer='<div class="container" style="margin:0; padding: 0;">'+aRow+'</div>';
-        var listItem='<li id="'+item.sender_id+'" class="list-group-item list-group-item-action conversation-item">'+itemContainer+'</li>'
-        $('.list-group').append(listItem);
-        list_count++;
-      }
-    });
-  }
+ 
 
   //function for loading bot and user messages in conversation layout 
   function load_messages(event_array,conversation_id){
@@ -607,39 +601,7 @@ $(function(){
     });
   });
 
-  //function for refreshing the conversation list upon refresh button 
-  //being clicked
-  $(document).on("click",'#conversation-list-reloader', function() {
-    
-    $.ajax({
-      type: 'GET',
-      url: 'http://127.0.0.1:5000/getlConversationList',       //the script to call to get data
-      dataType: 'json',          
-      contentType: 'application/json; charset=utf-8',         //data format
-      beforeSend:function(){
-        $('#conversation_list').empty();
-        $('.conv-list-loader').show();
-      },
-      success: function(data){             //on recieve of reply
-      //  $.each($(data), function(key, value) {
-          //$('#itemContainer').append(value.user_id);
-       // });
-       var conversation_array=JSON.parse(data);
-       render_convesation_list(conversation_array);
-       $('.conversation-item:first').addClass('active');
-
-      },
-      error: function(){
-       // $('#itemContainer').html('<i class="icon-heart-broken"> <?= $lang["NO_DATA"] ?>');
-       $('.col-conversation-list').text('error has occured');
-      },
-      complete:function(){
-        $('.conv-list-loader').hide();
-      }
-    });
-
-
-  });
+ 
   
   //click event for user sent messages for displaying intent data
   $(document).on("click",'.message_bubble_user', function() {
@@ -1061,5 +1023,7 @@ $(function(){
  conversation_id=$('#conversation_list li').first().attr('id');
  $('.conversation-item:first').addClass('active');
  load_aConversation(conversation_id);
-  
+
+ format_all_datetime();
+
 });

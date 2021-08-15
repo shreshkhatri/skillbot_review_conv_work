@@ -63,31 +63,21 @@ export function returnConvItem(convID){
 /******************************************************************************* */
 
 //function for marking the conversation as 'reviewed', 'unread' or 'saved_for_later'
-export function mark_as_reviewed(convID,status){
+export function mark_as_reviewed(convID){
 
     var outcome;
-    //checking if the argument status is one of the predefined constants
-    if (!STATUS.some((element)=>element==status)){
-        displayModal('ERROR !','Invalid review status code');
-        outcome='invalid status code.';
-    }
-
     $.ajax({
         type: 'POST',
-        url: 'http://127.0.0.1:5000/update-conversation-status',       //the script to call to get data
+        url: 'http://127.0.0.1:5000/mongo/markReviewed',       //the script to call to get data
         data: JSON.stringify({
-          'conv_id':convID,
-          'status':status
+          'sender_id':convID
         }), //add the data to the form
         dataType: 'json',          
         contentType: 'application/json; charset=utf-8',         //data format
         success: function(data){  
-            if (data.hasOwnProperty('status') && data.status=='success'){
-                outcome=true;
-            }
-            else{
+            if(data!==true){
                 outcome=data.status;
-            }     
+            }else outcome=true;
         },
         error: function(error){
             //for general errors
@@ -98,7 +88,7 @@ export function mark_as_reviewed(convID,status){
                 outcome='Please check your Internet Connectivity'
             }
         },
-        async:false,
+        async:false
       });
 
       return outcome;

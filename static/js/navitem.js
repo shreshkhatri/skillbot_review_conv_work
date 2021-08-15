@@ -1,3 +1,6 @@
+
+import {load_reviewed_conversations} from './mongo_reviewed_conversation.js'
+
 //this array holds the objects that contain navitem ID and row ID represented by
 //those those nav item
 export const navigation_items_array=[
@@ -21,7 +24,12 @@ export function nav_item_click_handler(id,navigation_items_array){
     var flag=true,counter=0;
     while(flag){
         if(navigation_items_array[counter].nav_id==id){
-            $('#'+navigation_items_array[counter].row_id).fadeIn('slow');
+            if(id=='reviewed'){
+                $('#'+navigation_items_array[counter].row_id).fadeIn('slow',function(){load_reviewed_conversations()});
+            }else{
+                $('#'+navigation_items_array[counter].row_id).fadeIn('slow');    
+            }
+            
             flag=false;
         }
         counter++;
