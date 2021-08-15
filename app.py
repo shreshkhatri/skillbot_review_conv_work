@@ -6,14 +6,15 @@ from flask import Flask,render_template,request,jsonify
 from flask_fontawesome import FontAwesome
 from python_files import auth, api_calls, helper
 from python_files.chat_server_status import check_server_status
-from python_files.blueprint_mongodb.mongodb_api import bp_mongodb_api
+from python_files.blueprint_mongodb.mongodb_bp import bp_mongodb
 from datetime import datetime
 from flask_scss import Scss
 import json
+from python_files.blueprint_mongodb import db
 
 class MongoJsonEncoder(JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, datetime):
+        if isinstance(obj, float):
             return obj.strftime("%Y-%m-%d %H:%M:%S")
         if isinstance(obj, ObjectId):
             return str(obj)
@@ -37,12 +38,12 @@ if __name__=='__main__':
 
     check_server_status()!=True and sys.exit(check_server_status())
 
-    bearer_token=auth.performauthentication('me','C6qKn7CXKxo3')
+    bearer_token=auth.performauthentication('me','1qhvvA52GTtG')
     isinstance(bearer_token,dict) and sys.exit(bearer_token['error_message'])
 
-    app.register_blueprint(bp_mongodb_api)
+    app.register_blueprint(bp_mongodb,url_prefix='/mongo')
     
-    #route for updating the status of the conversation as 'reviewed','unread' or 'saved_for_later'
+    """ #route for updating the status of the conversation as 'reviewed','unread' or 'saved_for_later'
     @app.route('/update-conversation-status',methods=['POST'])
     def update_conv_status():
         STATUS=['reviewed','unread','saved_for_later'];
@@ -61,7 +62,7 @@ if __name__=='__main__':
             return jsonify({'status':'Incorrect status code'})
         
         return jsonify({'status':api_calls.update_conv_status(bearer_token,incoming_JSON['conv_id'],incoming_JSON['status'])})
-
+ """
 
     #route for serving code snippet for review confirmation of a message
     @app.route('/templates/mark-conv-review')
@@ -111,9 +112,7 @@ if __name__=='__main__':
     def load_conv():
         incoming_JSON=request.get_json()
         if 'conv_id' not in incoming_JSON:
-            var={'error':'Sorrry but no conversation id was supplied'}
-            var=json.dumps(var)
-            return json.dumps(var)
+            return jsonify({'error':'Sorry but no conversation id was supplied'})
         conv_id=incoming_JSON['conv_id']
         conversation=api_calls.get_a_conversation(bearer_token,conv_id)
         conversation=json.dumps(conversation)
@@ -121,13 +120,20 @@ if __name__=='__main__':
 
     @app.route('/')
     def index():
-        convlist=api_calls.get_list_of_conversation(bearer_token)
-        
-        if(len(convlist)!=0):
-            helper.format_datetime(convlist)
-            return render_template('index.html',title="Index Page for my site",conv=convlist,message_count=len(convlist))
-        else:
-            return render_template('index.html',title="Index Page for my site",message_count=0,conv=convlist,no_conversation_list=True)
+        try:
+            db.constructFullDbURI(app.config['DB_SRV'],app.config['DB_USERNAME'],app.config['DB_PASSWORD'],app.config['DB_NAME'])
+            db.connectMongoDB()
+            convlist=db.getUnDatedUnreviewedConversation()
+            if(len(convlist)!=0):
+                return render_template('index.html',title="Index Page for my site",conv=convlist,message_count=len(convlist))
+            else:
+                return render_template('index.html',title="Index Page for my site",message_count=0,conv=convlist,no_conversation_list=True)
+        except Exception as instance:
+            print('Error :'+str(instance))
+            return '<h2>Service not available, Please try again later.</h2>'
+    
+
+
 
     @app.route('/temproute')
     def temproute():
