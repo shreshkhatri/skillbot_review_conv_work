@@ -45,10 +45,7 @@ def upload_training_data(token,training_data):
             },
             json=training_data
             )
-    if response.status_code==200:
-        return True
-    else:
-        return False
+    return True if response.status_code==200 else False
 
 
 #get list of existing unread conversations
@@ -120,5 +117,4 @@ def correct_intent(token,incoming_JSON):
     if response.status_code==200:
         return True
     else:
-        return False
-        
+        return False        

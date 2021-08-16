@@ -92,12 +92,6 @@ def markConversationAsReviewed(sender_id):
     updateResult=collection.update_one(queryFilter,update)
     return True if updateResult.modified_count==1 else False
 
-def getConversation(sender_id):
-    global mongoclient
-    collection=mongoclient.newdatabase.conversations
-    collection.find_one()
-
-
 def get_review_dates():
     global mongoclient
     pipe=pl_reviewDates()
@@ -143,7 +137,27 @@ def unmarkConversationAsUnReviewed(sender_id):
     updateResult=collection.update_one(queryFilter,update)
     return True if updateResult.modified_count==1 else False
 
+def getAConversation(sender_id):
+    global mongoclient
+    queryFilter=queryFilter={'sender_id':sender_id}
+    projection={'events':1,'_id':0}
+    collection=mongoclient.newdatabase.conversations
+    return collection.find_one(queryFilter,projection)
+
+def markMessageAsReviewed(sender_id,message_id):
+    global mongoclient
+    queryFilter={'sender_id':sender_id}
+    today=datetime.now().date() 
+
+    #timestamp for todays date not including mins,secs and hours, converted to int for grouping later
+    timestamp=int(time.mktime(datetime.strptime(str(datetime.now().date()), "%Y-%m-%d").timetuple()))
     
+    update={"$set":{"events.$[index].review_status":True}}
+    arrayFilter=[{"index.message_id":message_id}]
+    collection=mongoclient.newdatabase.conversations
+    updateResult=collection.update_one(queryFilter,update,array_filters=arrayFilter,upsert=False)
+    #return True if updateResult.modified_count==1 else False
+
 
 ############################################################
 #   this is the text inside comment                FOR TESTING                            #
