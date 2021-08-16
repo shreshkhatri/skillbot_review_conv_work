@@ -321,7 +321,7 @@ $(function(){
         //constructing content for loading on review_section
             var content=`<b>Selected Message</b><input type="text" id="selected_message" class="form-control form-control-sm input-font-style"
             aria-label="message under review" aria-describedby="basic-addon2" autocomplete="off"
-            value="`+this_object.attr('data-message')+`" data-msg-timestamp="`+this_object.attr('data-message_timestamp')+`"
+            value="`+this_object.attr('data-message')+`" data-msg-id="`+this_object.attr('data-message_id')+`"
             data-conv-id="`+this_object.attr('data-conversation_id')+`">
             <button id="btn-save-edit-message" class="btn btn-primary btn-sm btn-custom-style" style="margin-top:.5em;" type="button" disabled>Message
             Saved</button>
@@ -469,7 +469,7 @@ $(function(){
 
         if(element.event=='user'){
 
-          custom_data_payload='data-message_timestamp="'+element.timestamp+'" ';
+          custom_data_payload='data-message_id="'+element.message_id+'" ';
           custom_data_payload+='data-conversation_id="'+conversation_id+'"';
           custom_data_payload+='data-message="'+element.text+'" ';
           custom_data_payload+='data-intent-name="'+element.parse_data.intent.name+'" ';
@@ -478,18 +478,18 @@ $(function(){
             incorrect_intent=element.parse_data.intent_ranking[1].name;
             confidence=element.parse_data.intent_ranking[1].confidence;
             confidence=parseFloat(confidence).toFixed(2);
-            extra_div='<div class="message_details " style="float:right;"><p>Intent : '+incorrect_intent+'</p><p>Confidence : '+confidence+'</p><p> Message Reviewed :'+(element.is_flagged ? ' Yes ' : ' No ');+'</p></div>';
+            extra_div='<div class="message_details " style="float:right;"><p>Intent : '+incorrect_intent+'</p><p>Confidence : '+confidence+'</p><p> Message Reviewed :'+(element.review_status ? ' Yes ' : ' No ');+'</p></div>';
             message_bubble_div='<div class="message_bubble_user fallback bg-warning"'+custom_data_payload+' >'+element.text+'</div>';
           }
           else if(element.parse_data.intent.confidence<=confidence_value){ //aditionally we want to highlight messages that have confidence lower than selected threshold value
             incorrect_intent=element.parse_data.intent.name;
             confidence=element.parse_data.intent.confidence;
             confidence=parseFloat(confidence).toFixed(2);
-            extra_div='<div class="message_details " style="float:right;"><p>Intent : '+incorrect_intent+'</p><p>Confidence : '+confidence+'</p><p> Message Reviewed :'+(element.is_flagged ? ' Yes ' : ' No ');+'</p></div>';
+            extra_div='<div class="message_details " style="float:right;"><p>Intent : '+incorrect_intent+'</p><p>Confidence : '+confidence+'</p><p> Message Reviewed :'+(element.review_status ? ' Yes ' : ' No ');+'</p></div>';
             message_bubble_div='<div class="message_bubble_user fallback bg-warning" '+custom_data_payload+' >'+element.text+'</div>';
           }
           else{
-            extra_div='<div class="message_details" style="float:right;"><p>Intent : '+element.parse_data.intent.name+'</p><p>Confidence : '+parseFloat(element.parse_data.intent.confidence).toFixed(2)+'</p><p> Message Reviewed :'+(element.is_flagged ? ' Yes ' : ' No ');+'</p></div>';
+            extra_div='<div class="message_details" style="float:right;"><p>Intent : '+element.parse_data.intent.name+'</p><p>Confidence : '+parseFloat(element.parse_data.intent.confidence).toFixed(2)+'</p><p> Message Reviewed :'+(element.review_status ? ' Yes ' : ' No ');+'</p></div>';
             message_bubble_div='<div class="message_bubble_user non-fallback" '+custom_data_payload+' >'+element.text+'</div>';
           }
           
@@ -522,9 +522,9 @@ $(function(){
        
     $.ajax({
       type: 'POST',
-      url: 'http://127.0.0.1:5000/getAConversation',       //the script to call to get data
+      url: 'http://127.0.0.1:5000/mongo/getAConversation',       //the script to call to get data
       data: JSON.stringify({
-        'conv_id':conversation_id
+        'sender_id':conversation_id
       }), //add the data to the form
       dataType: 'json',          
       contentType: 'application/json; charset=utf-8',         //data format
@@ -537,13 +537,11 @@ $(function(){
       //  $.each($(data), function(key, value) {
           //$('#itemContainer').append(value.user_id);
        // });
-       var response=JSON.parse(data);
-       if (response.hasOwnProperty('error')){
-        $('#message_container').text(response.error);
+       if (data.hasOwnProperty('error')){
+        $('#message_container').text(data.error);
        }
        else{
-         
-        load_messages(response.events,conversation_id);
+        load_messages(data.events,conversation_id);
        }
        
       },
@@ -570,9 +568,9 @@ $(function(){
     
     $.ajax({
       type: 'POST',
-      url: 'http://127.0.0.1:5000/getAConversation',       //the script to call to get data
+      url: 'http://127.0.0.1:5000/mongo/getAConversation',       //the script to call to get data
       data: JSON.stringify({
-        'conv_id':conversation_id
+        'sender_id':conversation_id
       }), //add the data to the form
       dataType: 'json',          
       contentType: 'application/json; charset=utf-8',         //data format
@@ -583,12 +581,12 @@ $(function(){
       //  $.each($(data), function(key, value) {
           //$('#itemContainer').append(value.user_id);
        // });
-       var response=JSON.parse(data);
-       if (response.hasOwnProperty('error')){
-        $('#message_container').text(response.error);
+    
+       if (data.hasOwnProperty('error')){
+        $('#message_container').text(data.error);
        }
        else{ 
-        load_messages(response.events,conversation_id);
+        load_messages(data.events,conversation_id);
        }
       },
       error: function(){
@@ -837,20 +835,22 @@ $(function(){
   });
 
   function upload_training_data(){
-
+    
     $.ajax({
       type: 'POST',
-      url: 'http://127.0.0.1:5000/uploadTrainingdata',       //the script to call to get data
+      url: 'http://127.0.0.1:5000/mongo/markMessageAsReviewed',       //the script to call to get data
       data: JSON.stringify({
         'text':a_training_example.text,
         'intent': a_training_example.intent,
         'entities':a_training_example.entities,
         'intent_mapped_to':a_training_example.intent_mapped_to==undefined?'':a_training_example.intent_mapped_to,
-        'message_reviewed_flag':true,
-        'conversation_id':$('#selected_message').attr('data-conv-id'),
-        'message_timestamp':$('#selected_message').attr('data-msg-timestamp')
+        'sender_id':$('#selected_message').attr('data-conv-id'),
+        'message_id':$('#selected_message').attr('data-msg-id')
       }), //add the data to the form          
       contentType: 'application/json; charset=utf-8',         //data format
+      success:function(data){
+        alert(JSON.stringify(data));
+      },
       beforeSend:function(){
         $('.message-under-review').hide();
         $('.review-details-loader').css({'margin-top': '40%','margin-left': '20%'});
@@ -876,54 +876,7 @@ $(function(){
       }
     });
   }
-
-  function new_intent_generation(){
-    $.ajax({
-      type: 'POST',
-      url: 'http://127.0.0.1:5000/uploadNewTrainingdata',       //the script to call to get data
-      data: JSON.stringify({
-        'text': message_object.latest_message,
-        'intent':$('#txt_new_intent').val()
-      }), //add the data to the form          
-      contentType: 'application/json; charset=utf-8',         //data format
-      beforeSend:function(){
-        content_buffer=$('.message-under-review').html();
-        $('.review-section').empty();
-        $('.review-section').append('<div id="intent-registration-info" class="review-details-loader" style="display: none;"></div>');
-        $('#intent-registration-info').append('<span class="fas fa-spinner fa-pulse"></span><p style="font-size:.5em">Creating new intent</p>');
-        $('#intent-registration-info').fadeIn();
-        $('#intent-registration-info').show();
-      },
-      success: function(data){             //on recieve of reply
-        var response=JSON.parse(data);
-       if (response.hasOwnProperty('error')){
-        $('#message_container').text(response.error);
-       }
-       else{
-        //
-
-
-       }
-      },
-      error: function(){
-       // $('#itemContainer').html('<i class="icon-heart-broken"> <?= $lang["NO_DATA"] ?>');
-       $('#loading').text('error has occured');
-      },
-      complete:function(){
-        $('.review-section').empty();
-        $('.review-section').append('<div id="intent-registration-info" class="review-details-loader" style="display: none;"></div>');
-        $('#intent-registration-info').append('<span class="fas fa-check" style="color: goldenrod;"></span><p style="font-size: .5em;">Intent Created successfully !</p>');
-        $('#intent-registration-info').fadeIn();
-        $('#intent-registration-info').show();
-        $('.review-section').empty();
-        $('.review-section').html(content_buffer);
-      
-        //$('.message-under-review').fadeIn();
-    
-      }
-    });
-  }
-  
+ 
 
   $(document).on( "select","#selected_message", function(e){
     // this is important for creating new object
