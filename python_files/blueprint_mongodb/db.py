@@ -152,7 +152,7 @@ def markMessageAsReviewed(sender_id,message_id):
     #timestamp for todays date not including mins,secs and hours, converted to int for grouping later
     timestamp=int(time.mktime(datetime.strptime(str(datetime.now().date()), "%Y-%m-%d").timetuple()))
     
-    update={"$set":{"events.$[index].review_status":True}}
+    update={"$set":{"events.$[index].review_status":True,"events.$[index].reviewed_by":"user1"}}
     arrayFilter=[{"index.message_id":message_id}]
     collection=mongoclient.newdatabase.conversations
     updateResult=collection.update_one(queryFilter,update,array_filters=arrayFilter,upsert=False)
