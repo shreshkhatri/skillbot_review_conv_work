@@ -36,11 +36,11 @@ if __name__=='__main__':
     #Scss(app,static_dir='static/css',asset_dir='static/sass')
     fa = FontAwesome(app)
 
-    check_server_status()!=True and sys.exit(check_server_status())
+    #check_server_status()!=True and sys.exit(check_server_status())
 
-    bearer_token=auth.performauthentication('me','24RA5Yuc97uO')
-    isinstance(bearer_token,dict) and sys.exit(bearer_token['error_message'])
-    app.config['bearer_token']=bearer_token
+    #bearer_token=auth.performauthentication('me','24RA5Yuc97uO')
+    #isinstance(bearer_token,dict) and sys.exit(bearer_token['error_message'])
+    #app.config['bearer_token']=bearer_token
 
     app.register_blueprint(bp_mongodb,url_prefix='/mongo')
     
