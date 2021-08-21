@@ -75,5 +75,4 @@ if __name__=='__main__':
         except Exception as instance:
             print('Error :'+str(instance))
             return '<h2>Service not available, Please try again later.</h2>'
-        
-    app.run(debug=True)
+app.run(debug=True)
