@@ -49,9 +49,9 @@ function render_convesation_list(conversation_array) {
       item.sender_id +
       `" class="list-group-item list-group-item-action conversation-item ">
     <div class="container" style="margin:0; padding: 0;">
-        <div class="row">
-            <div class="col-md-2 col-sm-2 "><span class="fas fa-user-circle circular-avatar"></span></div>
-            <div class="col-md-6 col-sm-6 conv-detail"com>
+        <div class="row justify-content-center">
+            <div ><span class="fas fa-user-circle circular-avatar"></span></div>
+            <div class=" conv-detail"com>
                 <p> Started On: <span class="date-started">` +
       formatTimeStamp(item.start_date) +
       `</span></p>
@@ -62,7 +62,7 @@ function render_convesation_list(conversation_array) {
       item.count +
       `</b> unidentified message(s)</p>
             </div>
-            <div class="col-md-4 col-sm-4 mark-review" style="font-size: .85em;">
+            <div class=" mark-review" style="font-size: .85em;">
                 <p class="marker" style="cursor: pointer;">Mark as Reviewed</p>
             </div>
         </div>

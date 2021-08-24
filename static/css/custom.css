@@ -43,6 +43,9 @@ body{
   overflow-y: auto;
 }
 
+.list-group{
+  width:100%;
+}
 .review-section{
   height: 31.25em;
   overflow-y: auto;
