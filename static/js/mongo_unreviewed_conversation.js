@@ -1,11 +1,11 @@
 import {formatTimeStamp,calculateActiveAgo} from './date_manipulation.js'
-
+import {BASE_URL} from './baseurl.js';
 
 
 export function load_unreviewed_conversations(initial_date, final_date) {
   $.ajax({
     type: "POST",
-    url: "http://127.0.0.1:5000/mongo/load-dated-conversations-items", //the script to call to get data
+    url: BASE_URL+"mongo/load-dated-conversations-items", //the script to call to get data
     data: JSON.stringify({
       initial_date: initial_date,
       final_date: final_date,
@@ -30,8 +30,8 @@ export function load_unreviewed_conversations(initial_date, final_date) {
         }
       }
     },
-    error: function () {
-      $(".col-conversation-list").text("error has occured");
+    error: function (e) {
+      $(".col-conversation-list").text("error has occured: "+e.Message);
     },
     complete: function () {
       $(".conv-list-loader").hide();

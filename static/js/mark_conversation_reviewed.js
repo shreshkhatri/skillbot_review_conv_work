@@ -1,4 +1,6 @@
 import {displayModal} from './modal.js';
+import {BASE_URL} from './baseurl.js';
+
 //this object holds conversation item information after 'mark as read' item is clicked
 //in order to support redo and confirm operation 
 
@@ -68,7 +70,7 @@ export function mark_as_reviewed(convID){
     var outcome;
     $.ajax({
         type: 'POST',
-        url: 'http://127.0.0.1:5000/mongo/markReviewed',       //the script to call to get data
+        url: BASE_URL+'mongo/markReviewed',       //the script to call to get data
         data: JSON.stringify({
           'sender_id':convID
         }), //add the data to the form

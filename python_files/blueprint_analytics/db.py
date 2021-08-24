@@ -1,7 +1,7 @@
 import sys,time
 from datetime import datetime
 from pymongo import MongoClient
-from python_files.blueprint_mongodb.pipelines import pl_datedUnreviewedConversation , pl_normalUnreviewedConversation, pl_startingDateForAConversation,pl_startingDateForUnreviewedConversation, pl_reviewDates,pl_review_date_details,pl_message_counter
+from python_files.blueprint_analytics.pipelines import pl_conversation_count,pl_unidentified_messages_summary,pl_conversation_sessions,pl_timestamp_for_an_event
 
 #For username and passwords reserved characters like ‘:’, ‘/’, ‘+’ and ‘@’ 
 from urllib.parse import quote_plus
@@ -46,6 +46,52 @@ def getMongoClient():
 def getfullURI():
     global mongoclient
     return fullURI if fullURI!=None else sys.exit('Full URI not configured yet.')
+
+def getconversationCount(initial_date,final_date):
+    global mongoclient
+    pipe=pl_conversation_count(initial_date,final_date)
+    collection=mongoclient.newdatabase.conversations
+    return list(collection.aggregate(pipe))
+
+def getUnidentifiedMessageSummary(initial_date,final_date):
+    global mongoclient
+    pipe=pl_unidentified_messages_summary(initial_date,final_date)
+    collection=mongoclient.newdatabase.conversations
+    return list(collection.aggregate(pipe))
+
+def getSessionsInConversations():
+    global mongoclient
+    pipe=pl_conversation_sessions()
+    collection=mongoclient.newdatabase.conversations
+    return list(collection.aggregate(pipe))
+
+def get_an_event_timestamp(sender_id,event_index):
+    global mongoclient
+    pipe=pl_timestamp_for_an_event(sender_id,event_index)
+    collection=mongoclient.newdatabase.conversations
+    return list(collection.aggregate(pipe))
+
+
+def calculateSessionDuration(sender_id,session_start_index):
+    global mongoclient
+    pass 
+
+
+
+
+
+
+
+
+
+
+
+
+
+############################################################################################################
+
+
+
 
 def getDatedUnreviewedConversation(initial_date,final_date):
     global mongoclient

@@ -41,7 +41,6 @@
             {% endif %}
           </div>
           <div class="row second-row">
-            <button id="conversation-list-reloader" class="btn btn-sm btn-primary">Refresh List</button>
           </div>
         </div>
         <div class="col-md-4 col-sm-6">
@@ -75,17 +74,27 @@
     </div>
   </div>
   <div id="reviewed-conversations" class="row justify-content-center" style="display: none;min-height: 35em;">
-    <div id="reviewed-conversation-column" class="col" style="display: none;">
-      
-    </div>
+    <div id="reviewed-conversation-column" class="col" style="display: none;"></div>
     <span id="reviewed-message-loader" style="display: none;"><b><i class="fas fa-spinner fa-pulse text-secondary"></i></b><p class="text-secondary">Loading</p></span>
     <span id="query-result" style="display: none;"><p class="text-secondary"></p></span>
   </div>
   <div id="review-history" class="row" style="display: none;">
     <div class="col">
-      <p>
-        Reviewe history
-      </p>
+      <dl>
+        <dt><a href="https://mongo-analytics-api.herokuapp.com/analytics/totalusers" target="_blank">https://mongo-analytics-api.herokuapp.com/analytics/totalusers</a></dt>
+        <dd>
+          Gives total number of users or conversations stored so far
+        </dd>
+        <dt><a href="https://mongo-analytics-api.herokuapp.com/analytics/interactive-sessions" target="_blank">https://mongo-analytics-api.herokuapp.com/analytics/interactive-sessions</a></dt>
+        <dd>
+          Gives list of interactive session in seconds. Each conversation can have multiple sessions seperated by 1 hour apart.
+        </dd>
+        <dt><a href="https://mongo-analytics-api.herokuapp.com/analytics/unidentified-message-summary" target="_blank">https://mongo-analytics-api.herokuapp.com/analytics/unidentified-message-summary</a></dt>
+        <dd>
+          Gives total number of conversations,minimum no. of unidentified messages, maximum no. of unidentified messages and average numbr of unidentified messages
+        </dd>
+        
+      </dl>
     </div>
   </div>
 </div>

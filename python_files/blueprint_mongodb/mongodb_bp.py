@@ -18,7 +18,7 @@ def load_conversations():
         if len(conversation_details)!=0:
             for anItem in conversation_details:
                 datalist=db.getConversationStartedDateForAConversation(anItem['sender_id'])
-                anItem['start_date']=datalist[0]['start_date']
+                anItem['start_date']=datalist[0]['events']['timestamp']
         return jsonify(conversation_details)
 
 
@@ -49,8 +49,10 @@ def get_conversation():
 
 @bp_mongodb.route('/get-reviewd-conversations')
 def get_review_history():
-
-    return jsonify(db.get_reviewed_conversations_summary() or{'error':'Sorry some error occured'})
+    try:
+        return jsonify(db.get_reviewed_conversations_summary())
+    except Exception as instance:
+        return jsonify({'error':str(instance)})
 
 
 @bp_mongodb.route('/unmarkConversation',methods=['POST'])

@@ -5,6 +5,7 @@ import {load_unreviewed_conversations} from './mongo_unreviewed_conversation.js'
 import {mark_conversation_as_unreviewed} from './mongo_reviewed_conversation.js';
 import {format_all_datetime} from './atpageload.js';
 import {displayModal,displayReviewConversaitonModal} from './modal.js';
+import {BASE_URL} from './baseurl.js';
 
 $(function(){
 
@@ -116,7 +117,7 @@ $(function(){
     conv_item.html_content=$(this).parents('li').html();
     var height=conv_item.element.css('height');
     var width=conv_item.element.css('width');
-    conv_item.element.hide().load( "http://127.0.0.1:5000/templates/mark-conv-review",function(responseTxt,responseStatus){
+    conv_item.element.hide().load( BASE_URL+'templates/mark-conv-review',function(responseTxt,responseStatus){
      if(responseStatus=='error'){
        displayModal('ERROR !','Something went wrong, Please try this option later.');
        return;
@@ -227,7 +228,7 @@ $(function(){
 
     $.ajax({
       type:'GET',
-      url:'http://127.0.0.1:5000/getEntityList',
+      url:BASE_URL+'getEntityList',
       dataType:`json`,
       contentType:'application/json; charset=utf-8',
       beforeSend:function(){
@@ -287,7 +288,7 @@ $(function(){
     empty_review_section();
     $.ajax({
       type: 'GET',
-      url: 'http://127.0.0.1:5000/getIntentList',       //the script to call to get data
+      url: BASE_URL+'getIntentList',       //the script to call to get data
       dataType: 'json',          
       contentType: 'application/json; charset=utf-8',         //data format
       beforeSend:function(){
@@ -522,7 +523,7 @@ $(function(){
        
     $.ajax({
       type: 'POST',
-      url: 'http://127.0.0.1:5000/mongo/getAConversation',       //the script to call to get data
+      url: BASE_URL+'mongo/getAConversation',       //the script to call to get data
       data: JSON.stringify({
         'sender_id':conversation_id
       }), //add the data to the form
@@ -568,7 +569,7 @@ $(function(){
     
     $.ajax({
       type: 'POST',
-      url: 'http://127.0.0.1:5000/mongo/getAConversation',       //the script to call to get data
+      url: BASE_URL+'mongo/getAConversation',       //the script to call to get data
       data: JSON.stringify({
         'sender_id':conversation_id
       }), //add the data to the form
@@ -738,7 +739,7 @@ $(function(){
     
     $.ajax({
       type: 'GET',
-      url: 'http://127.0.0.1:5000/getIntentList',       //the script to call to get data
+      url: BASE_URL+'getIntentList',       //the script to call to get data
       dataType: 'json',          
       contentType: 'application/json; charset=utf-8',         //data format
       beforeSend:function(){
@@ -838,7 +839,7 @@ $(function(){
     
     $.ajax({
       type: 'POST',
-      url: 'http://127.0.0.1:5000/mongo/markMessageAsReviewed',       //the script to call to get data
+      url: BASE_URL+'mongo/markMessageAsReviewed',       //the script to call to get data
       data: JSON.stringify({
         'text':a_training_example.text,
         'intent': a_training_example.intent,

@@ -1,6 +1,6 @@
 import {formatTimeStamp,calculateActiveAgo, formatTimeStamp_LL} from './date_manipulation.js'
 import { displayModal } from './modal.js';
-
+import {BASE_URL} from './baseurl.js';
 
 
 export function load_reviewed_conversations() {
@@ -13,7 +13,7 @@ export function load_reviewed_conversations() {
 
   $.ajax({
     type: "GET",
-    url: "http://127.0.0.1:5000/mongo/get-reviewd-conversations", //the script to call to get data
+    url: BASE_URL+"mongo/get-reviewd-conversations", //the script to call to get data
     dataType: "json",
     beforeSend: function () {
      $('#reviewed-message-loader').show();
@@ -77,7 +77,7 @@ function render_reviewed_conversation_details(review_details) {
         
                             var subcontent=`<tr>
                                   <td scope="row">`+a_conversation['sender_id']+`</td>
-                                  <td>`+formatTimeStamp(a_conversation.events.timestamp)+`</td>
+                                  <td>`+formatTimeStamp(a_conversation['start_date'])+`</td>
                                   <td>`+a_conversation['review_by']+`</td>
                                   <td>`+a_conversation['message_count_since_last_review']+`</td>
                                   <td>`+calculateActiveAgo(a_conversation['latest_event_time'])+`</td>
@@ -94,7 +94,7 @@ function render_reviewed_conversation_details(review_details) {
 export function mark_conversation_as_unreviewed(jQuery_object){
   $.ajax({
     type: "POST",
-    url: "http://127.0.0.1:5000/mongo/unmarkConversation", //the script to call to get data
+    url: BASE_URL+"/mongo/unmarkConversation", //the script to call to get data
     dataType: "json",
     contentType: 'application/json; charset=utf-8', 
     data:JSON.stringify({

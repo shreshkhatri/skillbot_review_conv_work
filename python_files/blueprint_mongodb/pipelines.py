@@ -75,14 +75,10 @@ def pl_normalUnreviewedConversation():
                 '$ne': 'reviewed'
             }
         }
-    },
-    {
-        '$sort': {
-            'events.0.timestamp': -1
-        }
     }
     ,{
         '$project': {
+            '_id':1,
             'sender_id': 1, 
             'events': 1, 
             'latest_event_time': 1, 
@@ -96,7 +92,8 @@ def pl_normalUnreviewedConversation():
             'events.event': 'user', 
             'events.parse_data.intent.name': 'nlu_fallback'
         }
-    }, {
+    }, 
+    {
         '$group': {
             '_id': '$sender_id', 
             'count': {
@@ -109,10 +106,10 @@ def pl_normalUnreviewedConversation():
                 '$first': '$latest_event_time'
             }
         }
-    },
-    {
+    }
+    ,{
         '$sort': {
-            '_id': -1
+            'sender_id': -1
         }
     }
 ]
@@ -134,9 +131,15 @@ def pl_startingDateForAConversation(sender_id):
         }
     }, {
         '$project': {
-            '_id':0,
-            'start_date':'$events.timestamp'
+            '_id': 0, 
+            'events.timestamp': 1
         }
+    }, {
+        '$sort': {
+            'events.timestamp': 1
+        }
+    }, {
+        '$limit': 1
     }
 ]
 
@@ -220,12 +223,24 @@ def pl_review_date_details(a_review_date_timestamp):
             'events.name': 'action_session_start'
         }
     }, {
+        '$group': {
+            '_id': '$sender_id', 
+            'sender_id': {
+                '$first': '$sender_id'
+            }, 
+            'latest_event_time': {
+                '$first': '$latest_event_time'
+            }, 
+            'review_by': {
+                '$first': '$review_by'
+            }, 
+            'start_date': {
+                '$min': '$events.timestamp'
+            }
+        }
+    }, {
         '$project': {
-            '_id': 0, 
-            'sender_id': 1, 
-            'latest_event_time': 1, 
-            'review_by': 1, 
-            'events.timestamp': 1
+            '_id': 0
         }
     }
 ]
