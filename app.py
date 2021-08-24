@@ -32,13 +32,16 @@ app.config['DB_SRV']=config['db_credentials']['DB_SRV']
 app.config['DB_NAME']=config['db_credentials']['DB_NAME']
 app.config['DB_USERNAME']=config['db_credentials']['DB_USERNAME']
 app.config['DB_PASSWORD']=config['db_credentials']['DB_PASSWORD']
+app.config['CHAT_SERVER_DOMAIN']=config['chat_server_details']['DOMAIN_NAME']
+app.config['CHAT_SERVER_USERNAME']=config['chat_server_details']['RASA_X_USERNAME']
+app.config['CHAT_SERVER_PASSWORD']=config['chat_server_details']['RASA_X_PASSWORD']
 
 #Scss(app,static_dir='static/css',asset_dir='static/sass')
 fa = FontAwesome(app)
 
-check_server_status()!=True and sys.exit(check_server_status())
+check_server_status(app.config['CHAT_SERVER_DOMAIN'])!=True and sys.exit(check_server_status(app.config['CHAT_SERVER_DOMAIN']))
 
-bearer_token=auth.performauthentication('me','ixjl8WlHd35L')
+bearer_token=auth.performauthentication(app.config['CHAT_SERVER_USERNAME'],app.config['CHAT_SERVER_PASSWORD'])
 isinstance(bearer_token,dict) and sys.exit(bearer_token['error_message'])
 app.config['bearer_token']=bearer_token
 
