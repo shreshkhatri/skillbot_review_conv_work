@@ -60,12 +60,12 @@ def getUnDatedUnreviewedConversation():
     pipe=pl_normalUnreviewedConversation()
     collection=mongoclient.newdatabase.conversations
     conversation_details=list(collection.aggregate(pipe))
-    print(len(conversation_details))
+    
     if(len(conversation_details)!=0):
         for anItem in conversation_details:
             datalist=getConversationStartedDateForAConversation(anItem['sender_id'])
             anItem['start_date']=datalist[0]['events']['timestamp']
-    return conversation_details
+    return sorted(conversation_details, key=lambda conversation: conversation['start_date'],reverse=True) #soring conversation using start date in reverse order
 
 def getConversationStartedDates():
     global mongoclient
