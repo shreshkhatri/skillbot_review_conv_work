@@ -247,7 +247,7 @@ def pl_review_date_details(a_review_date_timestamp):
 
 #pipeline for counting new messages that came after the conversation was reviewed and the time
 # for which the user again communicated with the chatbot
-def pl_message_counter(sender_id,review_date,last_active_date):
+def pl_latest_unidentified_message_counter(sender_id,review_date,last_active_date):
     return [
     {
         '$match': {
@@ -264,7 +264,8 @@ def pl_message_counter(sender_id,review_date,last_active_date):
         }
     }, {
         '$match': {
-            'events.event': 'user'
+            'events.event': 'user',
+            'events.parse_data.intent.name': 'nlu_fallback'
         }
     }, {
         '$group': {

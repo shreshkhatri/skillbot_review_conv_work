@@ -1,7 +1,8 @@
 import sys,time
 from datetime import datetime
 from pymongo import MongoClient
-from python_files.blueprint_mongodb.pipelines import pl_datedUnreviewedConversation , pl_normalUnreviewedConversation, pl_startingDateForAConversation,pl_startingDateForUnreviewedConversation, pl_reviewDates,pl_review_date_details,pl_message_counter
+from python_files.blueprint_mongodb.pipelines import pl_datedUnreviewedConversation , pl_normalUnreviewedConversation, pl_startingDateForAConversation,pl_startingDateForUnreviewedConversation, pl_reviewDates,pl_review_date_details,pl_latest_unidentified_message_counter
+
 
 #For username and passwords reserved characters like ‘:’, ‘/’, ‘+’ and ‘@’ 
 from urllib.parse import quote_plus
@@ -98,9 +99,9 @@ def get_review_dates():
     collection=mongoclient.newdatabase.conversations
     return list(collection.aggregate(pipe))
 
-def get_number_of_messages(sender_id,from_reviewedDate,to_lastActiveDate):
+def get_number_of_new_unidentified_messages(sender_id,from_reviewedDate,to_lastActiveDate):
     global mongoclient
-    pipe=pl_message_counter(sender_id,from_reviewedDate,to_lastActiveDate)
+    pipe=pl_latest_unidentified_message_counter(sender_id,review_date,last_active_date)
     collection=mongoclient.newdatabase.conversations
     return list(collection.aggregate(pipe))
 
@@ -118,9 +119,8 @@ def get_reviewed_conversations_summary():
                 sender_id=a_conversation['sender_id']
                 review_date=an_item['review_date']
                 end_date=a_conversation['latest_event_time']
-                message_count=get_number_of_messages(sender_id,review_date,end_date)
+                message_count=get_number_of_new_unidentified_messages(sender_id,review_date,end_date)
                 a_conversation['message_count_since_last_review']=message_count[0]['count']
-                
     
     return review_details
 
